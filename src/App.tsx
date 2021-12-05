@@ -1,26 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import {
+  Link,
+  useNavigate,
+  Outlet
+} from "react-router-dom";
+import {AuthProvider, useAuthState} from "./contexts/auth/index";
+import PriceMeRoutes from "./routes";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <AuthProvider>
+        <PriceMeRoutes />
+      </AuthProvider>
   );
 }
 
-export default App;
+function Layout() {
+  return (
+      <div>
+        <AuthStatus />
+
+        <ul>
+          <li>
+            <Link to="/">Public Page</Link>
+          </li>
+          <li>
+            <Link to="/protected">Protected Page</Link>
+          </li>
+        </ul>
+
+        <Outlet />
+      </div>
+  );
+}
+
+
+function AuthStatus() {
+  let auth = useAuthState();
+  let navigate = useNavigate();
+
+  if (!auth.user) {
+    return <p>You are not logged in.</p>;
+  }
+
+  return (
+      <p>
+        Welcome {auth.user}!{" "}
+        <button
+            onClick={() => {
+              auth.signout(() => navigate("/"));
+            }}
+        >
+          Sign out
+        </button>
+      </p>
+  );
+}
+
+function PublicPage() {
+  return <h3>Public</h3>;
+}
+
+function ProtectedPage() {
+  return <h3>Protected</h3>;
+}
