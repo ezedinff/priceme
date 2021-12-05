@@ -1,35 +1,60 @@
-import useFetch from "use-http";
 import {useCallback, useEffect, useState} from "react";
 import {useAuthState} from "../contexts/auth";
 
+const fetchOptions: any = {
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+}
 function useFavourites() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [favourites, setFavourites] = useState<Array<string>>([]);
     const authState = useAuthState();
-    const {post, get, response, loading, error, data = []} = useFetch({  data: [] , cache: 'no-cache', mode: 'cors', headers: {Authorization: `bearer ${authState.token}`}});
+    fetchOptions.headers["Authorization"] = `bearer ${authState.token}`;
 
     const toggleFavourite = useCallback(async (value: string) => {
-        let {data} = await post('/api/favourites/toggle', {value});
-        if(response.ok){
-            setFavourites(data.favourites);
-        }
-    }, [post, response]);
+        fetchOptions['body'] = JSON.stringify({value});
+        fetchOptions['method'] = 'POST';
+        setLoading(true)
+        fetch('/api/favourites/toggle', fetchOptions)
+            .then(response => {
+                const d = response.json();
+                console.log(d)
+                return d;
+            })
+            .then(response => setFavourites(response.data.favourites))
+            .catch(err => setError(err))
+            .finally(() => setLoading(false));
+    }, []);
 
 
     const loadFavourites = useCallback(async () => {
-        let {data} = await get('/api/favourites');
-        if(response.ok) {
-            console.log(data);
-            setFavourites(data.favourites);
-        }
-    }, [get, response]);
+        fetchOptions['body'] = undefined;
+        fetchOptions['method'] = 'GET';
+        fetch('/api/favourites', fetchOptions)
+            .then(response => {
+                const d = response.json();
+                console.log(d)
+                return d;
+            })
+            .then(response => setFavourites(response.data.favourites))
+            .catch(err => setError(err))
+            .finally(() => setLoading(false));
+    }, []);
 
 
 
     useEffect(() => {
         loadFavourites().then();
-    }, [loadFavourites, toggleFavourite]) // componentDidMount
+    }, []) // componentDidMount
 
-    return {favouriteLoading: loading, favouriteError: error, favourites, toggleFavourite};
+    return {favouriteLoading: loading, favouriteError: error, favourites, toggleFavourite, loadFavourites};
 }
 
 export default useFavourites;

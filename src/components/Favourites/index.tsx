@@ -7,8 +7,9 @@ interface Props{
     results: Array<string>;
     favourites: Array<string>;
     toggleFavourite: (value: string) => void;
+    result: VoidFunction;
 }
-const Favourites: React.FC<Props> = ({title, results, favourites, toggleFavourite}) => {
+const Favourites: React.FC<Props> = ({title, results, favourites, toggleFavourite, result}) => {
     return (
         <Box borderWidth='1px' p={"24px"} borderRadius={"md"}>
             <Heading my={"16px"} size='md' borderBottomWidth={"1px"}> {title} </Heading>
@@ -17,7 +18,7 @@ const Favourites: React.FC<Props> = ({title, results, favourites, toggleFavourit
                     results.map((r) => {
                         return (<ListItem key={r} borderWidth={"1px"}  p={"8px"}
                                           display={"flex"}
-                                          onClick={() => toggleFavourite(r)}
+                                          onClick={() => {toggleFavourite(r); result();}}
                                           alignItems={"center"}
                                           _hover={{ bg: 'gray.100' }}>
                                 <ListIcon

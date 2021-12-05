@@ -35,7 +35,7 @@ function CalculatorPage() {
     const generateResults = () => {
         const filterCommoditiesByName = commodities.filter((comm) => comm.COMMODITY_NAME === commodity);
         const generatedResults = filterCommoditiesByName.map((commodity) => `${commodity.COUNTRY} ${((price + Number(commodity.VAR_OVERHEAD)) * quantity).toFixed(2)} | (${price + Number(commodity.VAR_OVERHEAD)} * ${quantity}) + ${Number(commodity.FIXED_OVERHEAD)}`);
-        setResults(generatedResults);
+        setResults([...generatedResults]);
     }
 
     return(
@@ -89,7 +89,7 @@ function CalculatorPage() {
                             </form>
                         </Box>
                     </Box>
-                        <Favourites title={"Results"} results={results} favourites={favourites} toggleFavourite={toggleFavourite} />
+                        <Favourites title={"Results"} results={results} favourites={favourites} toggleFavourite={toggleFavourite} result={generateResults} />
                 </SimpleGrid>
             }
         </Container>

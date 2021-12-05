@@ -2,9 +2,13 @@ import {Center, Container, Heading, Spinner} from "@chakra-ui/react";
 import Favourites from "../../components/Favourites";
 import * as React from "react";
 import useFavourites from "../../hooks/useFavourites";
+import {useEffect} from "react";
 
 function FavoritesPage() {
-    const {favourites, favouriteLoading, favouriteError, toggleFavourite} = useFavourites();
+    const {favourites, favouriteLoading, loadFavourites, favouriteError, toggleFavourite} = useFavourites();
+    useEffect( () => {
+
+    }, [favourites])
     return <Container maxW={'3xl'} py={12}>
 
         {
@@ -13,7 +17,7 @@ function FavoritesPage() {
                 :
                 (
                     favourites.length ?
-                        <Favourites title={"Favourites"} results={favourites} favourites={favourites} toggleFavourite={toggleFavourite} />
+                        <Favourites result={() => {}} title={"Favourites"} results={favourites} favourites={favourites} toggleFavourite={toggleFavourite} />
                         : <Center  height={"50vh"} >
                              <Heading size={"3xl"} color={"gray.500"}>You have no favourites!</Heading>
                          </Center>
