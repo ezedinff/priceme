@@ -18,7 +18,6 @@ const Favourites: React.FC<Props> = ({title, results, favourites, toggleFavourit
                     results.map((r) => {
                         return (<ListItem key={r} borderWidth={"1px"}  p={"8px"}
                                           display={"flex"}
-                                          onClick={() => {toggleFavourite(r); result();}}
                                           alignItems={"center"}
                                           _hover={{ bg: 'gray.100' }}>
                                 <ListIcon
@@ -26,6 +25,7 @@ const Favourites: React.FC<Props> = ({title, results, favourites, toggleFavourit
                                     as={IconButton}
                                     bg={"transparent"}
                                     alignItems={"center"}
+                                    onClick={() => {toggleFavourite(r); result();}}
                                     height={"100%"}
                                     py={"8px"}
                                     _hover={{ bg: 'transparent' }}
