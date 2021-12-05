@@ -8,7 +8,17 @@ import {
     Input,
     Heading,
     Button,
-    CircularProgress, List, ListItem, ListIcon, Spinner, Center, IconButton, Text
+    CircularProgress,
+    List,
+    ListItem,
+    ListIcon,
+    Spinner,
+    Center,
+    IconButton,
+    Text,
+    NumberInput,
+    NumberInputStepper,
+    NumberDecrementStepper, NumberInputField, NumberIncrementStepper
 } from "@chakra-ui/react";
 import * as React from "react";
 import useFetch, { Provider } from 'use-http';
@@ -24,7 +34,7 @@ function CalculatorPage() {
     const {favourites, favouriteLoading, favouriteError, toggleFavourite} = useFavourites();
     const [commodity, setCommodity] = React.useState('');
     const [quantity, setQuantity] = React.useState(0);
-    const [price, setPrice] = React.useState(0);
+    const [price, setPrice] = React.useState("");
 
     const [results, setResults] = React.useState<Array<string>>([]);
 
@@ -34,9 +44,13 @@ function CalculatorPage() {
     }
     const generateResults = () => {
         const filterCommoditiesByName = commodities.filter((comm) => comm.COMMODITY_NAME === commodity);
-        const generatedResults = filterCommoditiesByName.map((commodity) => `${commodity.COUNTRY} ${((price + Number(commodity.VAR_OVERHEAD)) * quantity).toFixed(2)} | (${price + Number(commodity.VAR_OVERHEAD)} * ${quantity}) + ${Number(commodity.FIXED_OVERHEAD)}`);
+        let p = Number(price);
+        const generatedResults = filterCommoditiesByName.map((commodity) => `${commodity.COUNTRY} ${((p + Number(commodity.VAR_OVERHEAD)) * quantity).toFixed(2)} | (${p + Number(commodity.VAR_OVERHEAD)} * ${quantity}) + ${Number(commodity.FIXED_OVERHEAD)}`);
         setResults([...generatedResults]);
     }
+
+    const format = (val: string) => `$` + val;
+    const parse = (val: string) => val.replace(/^\$/, '')
 
     return(
         <Container maxW={'5xl'} py={12}>
@@ -61,20 +75,24 @@ function CalculatorPage() {
 
                                 <FormControl isRequired  mb={"16px"}>
                                     <FormLabel>Quantity (in tons)</FormLabel>
-                                    <Input type="number"
-                                           placeholder="Quantity (in tons)"
-                                           size="lg"
-                                           onChange = {event => setQuantity(Number(event.currentTarget.value))}
-                                    />
+                                    <NumberInput min={0} size={"lg"}>
+                                        <NumberInputField onChange = {event => setQuantity(Number(event.currentTarget.value))}/>
+                                        <NumberInputStepper>
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                    </NumberInput>
                                 </FormControl>
 
                                 <FormControl isRequired  mb={"16px"}>
                                     <FormLabel>Price per ton</FormLabel>
-                                    <Input type="number"
-                                           placeholder="Price per ton"
-                                           size="lg"
-                                           onChange = {event => setPrice(Number(event.currentTarget.value))}
-                                    />
+                                    <NumberInput value={format(price)} min={0} size={"lg"}>
+                                        <NumberInputField onChange = {(event) => setPrice(parse(event.currentTarget.value))}/>
+                                        <NumberInputStepper>
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                    </NumberInput>
                                 </FormControl>
 
                                 <Button
